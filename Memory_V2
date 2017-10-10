@@ -1,0 +1,118 @@
+# Add an selection method for Tile class
+
+#################################################
+# Student adds code where appropriate    
+
+import simplegui
+import random
+
+# define globals
+TILE_WIDTH = 50
+TILE_HEIGHT = 100
+pre_index = -2
+state = 0
+guess = 0
+
+# definition of a Tile class
+class Tile:
+    
+    # definition of intializer
+    def __init__(self, num, exp, corr, loc):
+        self.number = num
+        self.exposed = exp
+        self.correct = corr
+        self.location = loc
+        
+    # definition of getter for number
+    def get_number(self):
+        return self.number
+    
+    # check whether tile is exposed
+    def is_exposed(self):
+        return self.exposed
+    
+    def is_correct(self):
+        return self.correct
+    
+    # expose the tile
+    def expose_tile(self):
+        self.exposed = True
+    
+    # hide the tile       
+    def hide_tile(self):
+        self.exposed = False
+        
+    # string method for tiles    
+    def __str__(self):
+        return "Number is " + str(self.number) + ", exposed is " + str(self.exposed)    
+
+    # draw method for tiles
+    def draw_tile(self, canvas):
+        loc = self.location
+        if self.exposed:
+            text_location = [loc[0] + 0.2 * TILE_WIDTH, loc[1] - 0.3 * TILE_HEIGHT]
+            canvas.draw_text(str(self.number), text_location, TILE_WIDTH, "White")
+        else:
+            tile_corners = (loc, [loc[0] + TILE_WIDTH, loc[1]], [loc[0] + TILE_WIDTH, loc[1] - TILE_HEIGHT], [loc[0], loc[1] - TILE_HEIGHT])
+            canvas.draw_polygon(tile_corners, 1, "Red", "Green")
+
+    # selection method for tiles
+    def is_selected(self, pos):
+        inside_hor = self.location[0] <= pos[0] < self.location[0] + TILE_WIDTH
+        inside_vert = self.location[1] - TILE_HEIGHT <= pos[1] <= self.location[1]
+        return  inside_hor and inside_vert     
+    
+    def set_correct(self):
+        self.correct = True
+
+def check (cur_index):
+    global state, guess
+    
+    if state == 0 :
+        state = 1
+        guess += 1
+    
+    elif state == 1 :
+        if tile[cur_index].get_number() == tile[pre_index].get_number() :
+            tile[cur_index].set_correct()
+            tile[pre_index].set_correct()
+        state = 2
+    
+    else:
+        for i in range (16):
+            if not tile[i].is_correct():
+                tile[i].hide_tile()
+        
+        state = 1
+        guess += 1
+    label.set_text('Total guesses = '+str(guess)) 
+        
+        
+# define event handlers
+def mouseclick(pos):
+    global pre_index
+    for i in range (16):
+        if tile[i].is_selected(pos) and not tile[i].is_exposed() :
+            check(i)
+            tile[i].expose_tile()
+            pre_index = i
+        
+# draw handler
+def draw(canvas):
+    for i in range(16):
+        tile[i].draw_tile(canvas)
+    
+# create 16 tiles
+deck = [i % 8 for i in range (16)]
+random.shuffle(deck)
+tile = [Tile(deck[i], False, False, [i*TILE_WIDTH, TILE_HEIGHT]) for i in range(16)]
+
+
+# create frame and add a button and labels
+frame = simplegui.create_frame("Memory", 16 * TILE_WIDTH, TILE_HEIGHT)
+frame.set_draw_handler(draw)
+frame.set_mouseclick_handler(mouseclick)
+label = frame.add_label('Total guesses = ')
+
+# get things rolling
+frame.start()
