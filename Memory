@@ -1,0 +1,83 @@
+# implementation of card game - Memory
+# Flipping cards and matching
+
+import simplegui
+import random
+
+WIDTH = 800
+HEIGHT = 100
+
+# helper function to initialize globals
+def new_game():
+    global guess,exposed,correct,deck,state
+    
+    deck = [i % 8 for i in range(16)]
+    random.shuffle(deck)
+    exposed = [False for i in range(16)]
+    correct = [False for i in range(8)]
+    guess = 0
+    state = 0
+    label.set_text('Total guesses = '+str(guess))
+
+def change_state(i):
+    global state,guess,exposed
+    
+    if state == 0:
+        state = 1
+        guess += 1
+        
+    elif state == 1:
+        if precard == deck[i]:
+            correct[deck[i]] = True;
+        state = 2
+    
+    elif state == 2:
+        state = 1
+        guess += 1
+        for i in range(16):
+            if not correct[deck[i]]:
+                exposed[i] = False
+    label.set_text('Total guesses = '+str(guess))     
+        
+     
+# define event handlers
+def mouseclick(pos):
+    # add game state logic here
+    global precard
+    for i in range (16):
+            if pos[0] >= WIDTH/16*i and pos[0] <= WIDTH/16*(i+1) and not exposed[i]:
+                change_state(i)
+                precard = deck[i]
+                exposed[i] = True
+    
+    pass
+    
+                        
+# cards are logically 50x100 pixels in size    
+def draw(canvas):
+    for i in range(16):
+        if exposed[i] == True:
+            #draw the card
+            canvas.draw_text(str(deck[i]), (WIDTH/16*i+WIDTH/64, HEIGHT/2), 20, 'White')
+        else:
+            #draw a dummy space
+            canvas.draw_text(" ", (WIDTH/16*i+WIDTH/64, HEIGHT/2), 12, 'White')
+        #draw the line in between
+        canvas.draw_line((WIDTH/16*i, 0), (WIDTH/16*i, HEIGHT), 2, 'White')
+
+# create frame and add a button and labels
+frame = simplegui.create_frame("Memory", WIDTH, HEIGHT)
+frame.add_button("Reset", new_game)
+label = frame.add_label('Total guesses = ')
+
+
+# register event handlers
+frame.set_mouseclick_handler(mouseclick)
+frame.set_draw_handler(draw)
+
+# get things rolling
+new_game()
+frame.start()
+
+
+# Always remember to review the grading rubric
