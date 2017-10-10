@@ -58,10 +58,10 @@ def draw(canvas):
     for i in range(16):
         if exposed[i] == True:
             #draw the card
-            canvas.draw_text(str(deck[i]), (WIDTH/16*i+WIDTH/64, HEIGHT/2), 20, 'White')
+            canvas.draw_text(str(deck[i]), (WIDTH/16*i+WIDTH/64, HEIGHT/2), 25, 'White')
         else:
             #draw a dummy space
-            canvas.draw_text(" ", (WIDTH/16*i+WIDTH/64, HEIGHT/2), 12, 'White')
+            canvas.draw_text(" ", (WIDTH/16*i+WIDTH/64, HEIGHT/2), 10, 'White')
         #draw the line in between
         canvas.draw_line((WIDTH/16*i, 0), (WIDTH/16*i, HEIGHT), 2, 'White')
 
