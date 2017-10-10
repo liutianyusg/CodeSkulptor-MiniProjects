@@ -1,0 +1,116 @@
+# template for "Guess the number" mini-project
+# input will come from buttons and an input field
+# all output for the game will be printed in the console
+
+import simplegui
+import random
+
+A = 0
+B = 0
+t_thous = 0
+t_hunds = 0
+t_tens = 0
+t_digs = 0
+thous = 0
+hunds = 0
+tens = 0
+digs = 0
+
+# helper function to start and restart the game
+def new_game():
+    # initialize global variables used in your code here
+    global t_thous
+    global t_hunds
+    global t_tens
+    global t_digs
+    
+    
+    target = random.randrange(1000,9999)    
+    t_thous= target / 1000
+    t_hunds= (target-t_thous * 1000) / 100
+    t_tens= (target-t_thous * 1000 - t_hunds * 100) / 10
+    t_digs= target % 10
+ 
+    if (t_thous == t_hunds) or (t_thous == t_tens) or (t_thous == t_digs) or (t_hunds == t_tens) or (t_hunds == t_digs) or  (t_tens == t_digs):
+        new_game()
+    else:
+        print "Welcome to the game!"
+    
+# define event handlers for control panel
+
+def check():
+    global A
+    global B
+    A = 0
+    B = 0
+
+    if thous == t_thous :
+        A += 1
+    elif (thous == t_hunds) or (thous == t_tens) or (thous == t_digs):
+        B +=1
+
+    if hunds == t_hunds :
+        A += 1
+    elif (hunds == t_thous) or (hunds == t_tens) or (hunds == t_digs):
+        B +=1
+    
+    if tens == t_tens :
+        A += 1
+    elif (tens == t_thous) or (tens == t_hunds) or (tens == t_digs):
+        B +=1
+    
+    if digs == t_digs :
+        A += 1
+    elif (digs == t_thous) or (digs == t_hunds) or (digs == t_tens):
+        B +=1
+    
+    if A==4 :
+        print " Correct! The number is", (t_thous * 1000 + t_hunds * 100 + t_tens * 10 + t_digs)
+    else:
+        print "Continue to guess:"
+        print A,"A ",B,"B "
+        print "------------------"
+    
+def input_thous(guess1):
+    global thous
+    thous = int(guess1)
+
+def input_hunds(guess2):
+    global hunds
+    hunds = int(guess2)
+
+def input_tens(guess3):
+    global tens
+    tens = int(guess3)
+
+def input_digs(guess4):
+    global digs
+    digs = int(guess4)
+
+def guess_handler():
+    print "Your guess is ",(thous * 1000 + hunds * 100 + tens * 10 + digs)
+    check()
+   
+def restart_handler():
+    new_game()
+def giveup_handler():
+    print "HAHA. The correct answer is", (t_thous * 1000 + t_hunds * 100 + t_tens * 10 + t_digs)
+
+# create frame
+frame = simplegui.create_frame ("Game", 100,400)
+
+# register event handlers for control elements and start frame
+inp1 = frame.add_input('Thousands', input_thous, 50)
+inp2 = frame.add_input('Hundreds', input_hunds, 50)
+inp3 = frame.add_input('Tens', input_tens, 50)
+inp4 = frame.add_input('Digits', input_digs, 50)
+
+frame.add_button('GUESS', guess_handler)
+frame.add_button('RESTART', restart_handler)
+frame.add_button('GIVE UP', giveup_handler)
+
+# call new_game 
+new_game()
+
+
+# always remember to check your completed program against the grading rubric
